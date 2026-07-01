@@ -1,0 +1,5 @@
+# Keep the docker build context small: the toolchain image needs none of this
+# (the repo is bind-mounted at run time, not copied into the image).
+.git/
+tmp/
+build/

@@ -1,0 +1,21 @@
+# reference material (yajl/json2toon), not part of this project
+/tmp/
+
+# build output (never lands in the source tree)
+/build/
+
+# ./configure output
+/config.mk
+/yatl.pc
+
+# editor / OS cruft
+*.o
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+.DS_Store
+
+# distribution archives
+*.zip

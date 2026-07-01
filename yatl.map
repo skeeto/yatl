@@ -1,0 +1,8 @@
+/* ELF linker version script: export only the public yatl API from the shared
+ * object, keeping every internal symbol local so it never pollutes the ABI. */
+{
+  global:
+    yatl_*;
+  local:
+    *;
+};

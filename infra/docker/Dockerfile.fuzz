@@ -1,0 +1,15 @@
+# Linux clang + libFuzzer toolchain for fuzzing yatl from any host -- including
+# an Apple-Silicon macOS box, whose native toolchain cannot link libFuzzer.
+#
+# Used by `make docker-fuzz`. The repo is bind-mounted at run time, so this
+# image carries only the toolchain, not the source. Builds natively for the
+# host architecture (arm64 on Apple Silicon, no emulation); pass
+# --platform=linux/amd64 to docker build/run to match the x86-64 CI instead.
+# clang on Ubuntu 24.04 is version 18; the compiler-rt static archives that
+# -fsanitize=fuzzer,address need ship separately in libclang-rt-18-dev.
+FROM ubuntu:24.04
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      clang libclang-rt-18-dev make ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+WORKDIR /src

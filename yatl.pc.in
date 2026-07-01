@@ -1,0 +1,10 @@
+prefix=@PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: yatl
+Description: Streaming, event-driven (SAX) parser for TOON (Token-Oriented Object Notation)
+Version: @VERSION@
+Libs: -L${libdir} -lyatl
+Cflags: -I${includedir}

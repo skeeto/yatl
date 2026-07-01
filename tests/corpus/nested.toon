@@ -1,0 +1,4 @@
+server:
+  host: localhost
+  ports[2|]: 80|443
+  msg: "a,b\n\u00e9"
