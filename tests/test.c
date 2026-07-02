@@ -133,6 +133,11 @@ int main(void) {
     err("escape_b_reject",     "m: \"a\\bb\"\n");
     err("escape_f_reject",     "m: \"a\\fb\"\n");
     err("escape_slash_reject", "m: \"a\\/b\"\n");
+    /* spec §7.1 unescaped-char includes %x09: a literal HTAB inside a quoted
+     * token is valid input, equivalent to \t; other raw controls stay errors. */
+    ok("literal_tab_str", "m: \"a\tb\"\n",         "{k(m)s(a\tb)}");
+    ok("literal_tab_key", "\"a\tb\": 1\n",         "{k(a\tb)#1}");
+    err("literal_cr_str",  "m: \"a\rb\"\n");
     ok("comma_quoted","m: \"a,b\"\n",              "{k(m)s(a,b)}");
     ok("dotted_key",  "a.b.c: 1\n",                "{k(a.b.c)#1}");
     ok("neg_and_exp", "a: -5\nb: 1.5e3\n",         "{k(a)#-5k(b)%1500}");

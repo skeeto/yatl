@@ -239,8 +239,8 @@ static int decode_quoted(yatl_handle h, const char *s, const char *e) {
             if (yatl_buf_putc(&h->scratch, (unsigned char)out) != 0)
                 return -2;
             p++;
-        } else if (c < 0x20) {
-            return -1;                       /* unescaped control byte */
+        } else if (c < 0x20 && c != '\t') {  /* HTAB is a legal unescaped-char (§7.1) */
+            return -1;                       /* other unescaped control byte */
         } else {
             if (yatl_buf_putc(&h->scratch, c) != 0)
                 return -2;
