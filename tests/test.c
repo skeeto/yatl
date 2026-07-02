@@ -176,6 +176,12 @@ int main(void) {
     err("len_leading_zero", "x[03]: 1,2,3\n");
     err("len_missing",      "x[|]: a|b\n");
     ok("len_zero_list",     "x[0]:\n",       "{k(x)[]}");
+    /* the bare [] token is an empty array only at root or after "key: " (§9.1);
+     * without the colon it is a missing-colon / malformed-header error */
+    ok("root_empty_arr",    "[]",            "[]");
+    err("empty_arr_no_colon",   "x[]\n");
+    err("item_bare_empty",      "x[1]:\n  - []\n");
+    err("root_empty_trailing",  "[]\nx: 1\n");
     err("need_quote", "x: a,b\n");
     err("bad_escape", "x: \"a\\q\"\n");
     err("trailing",   "42\nfoo: 1\n");

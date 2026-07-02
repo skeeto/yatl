@@ -555,21 +555,17 @@ static unsigned char *dup_token(yatl_handle h, const char *ks, const char *ke,
     return r;
 }
 
-/* Parse a TOON array header beginning at [p,end) where *p == '['. Forms: empty
- * ("[]"), inline ("[N]: a,b"), tabular ("[N]{cols}:") or list body ("[N]:").
- * Tabular/list push a frame at `header_indent`. Returns 0 on success. */
+/* Parse a TOON array header beginning at [p,end) where *p == '['. Forms:
+ * inline ("[N]: a,b"), tabular ("[N]{cols}:") or list body ("[N]:").
+ * Tabular/list push a frame at `header_indent`. The bare "[]" token is not a
+ * header (it is valid only at root and after "key: ", both handled by the
+ * callers), so it fails the length check here. Returns 0 on success. */
 static int emit_array_header(yatl_handle h, const char *p, const char *end,
                              unsigned header_indent) {
     size_t expected;
     int has_count;
     unsigned char delim = ',';
     p++;                                        /* '[' */
-    if (p < end && *p == ']') {                 /* empty array */
-        p++;
-        if (p != end) { set_err(h, "trailing text after []", h->line_off); return -1; }
-        if (emit_start_array(h) != 0) return -1;
-        return emit_end_array(h);
-    }
     {
         /* §6: the bracket segment must be a length with digits present and no
          * leading zeros ("0" is the only zero form); [03], [|] etc. are errors. */
@@ -880,6 +876,12 @@ static void process_line(yatl_handle h) {
     if (h->state == ST_START) {
         if (is_item) { set_err(h, "list item without an array header", h->line_off); return; }
         if (content[0] == '[') {                 /* root array */
+            if (clen == 2 && content[1] == ']') {   /* literal empty root array (§9.1) */
+                if (emit_start_array(h) != 0 || emit_end_array(h) != 0)
+                    return;
+                h->state = ST_DOC_DONE;
+                return;
+            }
             if (emit_array_header(h, content, content + clen, indent) != 0)
                 return;
             h->state = (h->nframes == 0) ? ST_DOC_DONE : ST_BODY;
